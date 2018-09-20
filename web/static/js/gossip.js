@@ -1,6 +1,8 @@
+import socket from "./socket"
+
 class Gossip {
 
-  static init(socket){
+  static init(){
     var $status    = $("#status")
       var $messages  = $("#messages")
       var $input     = $("#message-input")
@@ -10,7 +12,8 @@ class Gossip {
       socket.onError( ev => console.log("ERROR", ev)  )
       socket.onClose( e => console.log("CLOSE", e)  )
 
-      var chan = socket.channel("rooms:lobby", {})
+      var chan = socket.channel("rooms:lobby", {user:$username.val()})
+      console.log($username.val())
       chan.join()
       .receive("ignore", () => console.log("auth error"))
       .receive("ok", () => console.log("join ok"))
@@ -20,22 +23,25 @@ class Gossip {
 
       $input.off("keypress").on("keypress", e => {
         if (e.keyCode == 13) {
-          chan.push("new:msg", {user: $username.val(), body: $input.val()}, 10000)
+          e.preventDefault();
+          if ($input.val().trim() == "") {
             $input.val("")
-
+            return
+          }
+          chan.push("new:msg", {user: $username.val(), body: $input.val()}, 10000)
+          $input.val("")
         }
 
       })
 
     chan.on("new:msg", msg => {
       $messages.append(this.messageTemplate(msg))
-        scrollTo(0, document.body.scrollHeight)
-
+      $("#messages").scrollTop($("#messages")[0].scrollHeight)
     })
 
     chan.on("user:entered", msg => {
       var username = this.sanitize(msg.user || "anonymous")
-        $messages.append(`<br/><i>[${username} entered]</i>`)
+        $messages.append(`<i>[Welcome @${username} to the stream]</i><br/>`)
 
     })
 
@@ -47,7 +53,7 @@ class Gossip {
     let username = this.sanitize(msg.user || "anonymous")
       let body     = this.sanitize(msg.body)
 
-      return(`<p><a href='#'>[${username}]</a>&nbsp; ${body}</p>`)
+      return(`<div class="user-msg"><a href='#'>${username}: </a>&nbsp; ${body}</div>`)
 
   }
 

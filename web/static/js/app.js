@@ -7,4 +7,4 @@ import "phoenix_html"
 //
 import socket from "./socket"
 import Gossip from "./gossip"
-Gossip.init(socket)
+window.Gossip = Gossip

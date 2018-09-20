@@ -1,31 +1,86 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 	<head>
-		<meta charset="utf-8">
-		<meta http-equiv="X-UA-Compatible" content="IE=edge">
-		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<meta name="description" content="">
-		<meta name="author" content="">
-		<title>My Chat App</title>
+		<link href="https://vjs.zencdn.net/5.8.8/video-js.css" rel="stylesheet">
 		<link rel="stylesheet" href="<%= static_path(@conn, "/css/app.css") %>">
+		<script src="https://vjs.zencdn.net/5.8.8/video.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/videojs-contrib-hls/3.6.12/videojs-contrib-hls.js"></script>
+		<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
 	</head>
 	<body>
-		<div class="navbar navbar-default navbar-fixed-top" role="navigation">
-			<div class="container">
-				<div class="navbar-header">
-					<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-						<span class="sr-only">Toggle navigation</span>
-						<span class="icon-bar"></span>
-						<span class="icon-bar"></span>
-						<span class="icon-bar"></span>
-					</button>
-					<a class="navbar-brand" href="#">My Chat App</a>
+		<div class="col-md-12" style="margin-top:30px;">
+			<div class="col-md-9">
+				<video id="video-player" style="width:100%;height:641px;" class="video-js vjs-default-skin" controls>
+					<source src="http://live.laptrinhviendeptrai.xyz/hls/live/laptrinhstream.m3u8" type="application/x-mpegURL">
+				</video>
+			</div>
+			<!-- Modal -->
+			<div class="modal fade bd-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="username-modal-label" aria-hidden="true" id="username-modal">
+				<div class="modal-dialog modal-sm">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title">Welcome to the stream</h5>
+						</div>
+						<div class="modal-body">
+							<form id="username-form">
+								<div class="form-group">
+									<label for="recipient-name" class="col-form-label">What should I call you?</label>
+									<input type="text" required class="form-control" id="recipient-name" autofocus>
+								</div>
+							</form>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-primary">Let's go</button>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="col-md-3">
+				<div id="messages" class="pre-scrollable" style="max-height:567px;overflow-y:auto;height:567px;color:#ff6b6b;margin-bottom:10px;">
+				</div>
+				<div>
+					<input id="username" type="hidden" class="form-control" placeholder="username">
+					<textarea style="resize: none;" placeholder="say something I'm giving up on you..." id="message-input" class="form-control"></textarea>
 				</div>
 			</div>
 		</div>
+		</div>
 
-		<%= render @view_module, @view_template, assigns %>
 
-		<script src="<%= static_path(@conn, "/js/app.js") %>"></script>
 	</body>
+
+
+	<script src="<%= static_path(@conn, "/js/app.js") %>"></script>
+
+	<script>
+$(document).ready(function(){
+	// init video player
+	var player = videojs('video-player');
+	player.play();
+
+	// show modal
+	$("#username-modal").modal('show');
+	$('.modal-backdrop').remove();
+
+
+	$('#username-form').on('submit', function(e){
+		e.preventDefault()
+			$("#username").val($("#recipient-name").val())
+			$("#username-modal").modal('hide');
+		Gossip.init()
+	})
+	$('.btn.btn-primary').on('click', function(e){
+		e.preventDefault()
+			$("#username").val($("#recipient-name").val())
+			$("#username-modal").modal('hide');
+		Gossip.init()
+	})
+
+});
+
+
+	</script>
+
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
 </html>
